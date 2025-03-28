@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda tu Visita - Inmobiliaria</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 400px;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      color: #34495e;
+      font-weight: bold;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #bdc3c7;
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #2980b9;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #1f6390;
+    }
+
+    .message {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #27ae60;
+      text-align: center;
+    }
+
+    .icon-title {
+      font-size: 24px;
+      color: #2980b9;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .icon {
+      margin-right: 8px;
+      color: #2980b9;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="icon-title">
+      <i class="fas fa-building"></i> Inmobiliaria Zibatá
+    </div>
+    <h2><i class="fas fa-calendar-check icon"></i>Agenda tu visita</h2>
+    <form id="appointmentForm">
+      <label for="propertyType"><i class="fas fa-home icon"></i>Tipo de Propiedad:</label>
+      <select id="propertyType" required>
+        <option value="">Selecciona una opción</option>
+        <option value="Casa habitación">Casa habitación</option>
+        <option value="Departamento">Departamento</option>
+        <option value="Oficina">Oficina</option>
+      </select>
+
+      <label for="appointmentType"><i class="fas fa-handshake icon"></i>Tipo de Cita:</label>
+      <select id="appointmentType" required>
+        <option value="">Selecciona una opción</option>
+        <option value="Visita a propiedad">Visita a propiedad</option>
+        <option value="Asesoría personalizada">Asesoría personalizada</option>
+      </select>
+
+      <label for="date"><i class="fas fa-calendar-day icon"></i>Fecha:</label>
+      <input type="date" id="date" required>
+
+      <label for="time"><i class="fas fa-clock icon"></i>Hora:</label>
+      <select id="time" required>
+        <!-- Horarios -->
+      </select>
+
+      <button type="submit"><i class="fas fa-check-circle icon"></i>Confirmar Cita</button>
+      <div class="message" id="message"></div>
+    </form>
+  </div>
+
+  <script>
+    const appointmentForm = document.getElementById('appointmentForm');
+    const timeSelect = document.getElementById('time');
+    const messageDiv = document.getElementById('message');
+
+    const maxAppointmentsPerDay = 8;
+    const appointments = {};
+
+    const hours = [
+      '09:00', '10:00', '11:00', '12:00', '13:00',
+      '14:00', '15:00', '16:00', '17:00'
+    ];
+
+    function populateTimeOptions() {
+      timeSelect.innerHTML = '<option value="">Selecciona un horario</option>';
+      hours.forEach(hour => {
+        const option = document.createElement('option');
+        option.value = hour;
+        option.textContent = hour;
+        timeSelect.appendChild(option);
+      });
+    }
+
+    function checkAvailability(date) {
+      return appointments[date] && appointments[date].length >= maxAppointmentsPerDay;
+    }
+
+    appointmentForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const propertyType = document.getElementById('propertyType').value;
+      const appointmentType = document.getElementById('appointmentType').value;
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+
+      if (!propertyType || !appointmentType || !date || !time) {
+        messageDiv.textContent = 'Por favor completa todos los campos.';
+        messageDiv.style.color = '#c0392b';
+        return;
+      }
+
+      if (checkAvailability(date)) {
+        messageDiv.textContent = 'Lo sentimos, no hay más espacios disponibles para esta fecha.';
+        messageDiv.style.color = '#c0392b';
+        return;
+      }
+
+      if (!appointments[date]) {
+        appointments[date] = [];
+      }
+
+      appointments[date].push({
+        propertyType,
+        appointmentType,
+        time
+      });
+
+      messageDiv.textContent = '¡Tu cita ha sido agendada con éxito! Nos encantará ayudarte a encontrar tu próxima propiedad.';
+      messageDiv.style.color = '#27ae60';
+      appointmentForm.reset();
+      populateTimeOptions();
+    });
+
+    // Inicialización
+    populateTimeOptions();
+  </script>
+</body>
+
+</html>
